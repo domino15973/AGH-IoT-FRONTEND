@@ -20,7 +20,14 @@ import ChartTile from "./ChartTile";
 
 type TileConfig = {
     id: string;
-    type: "overview" | "temperature-chart" | "empty";
+    type:
+        | "overview"
+        | "temperature-chart"
+        | "humidity-chart"
+        | "water-chart"
+        | "light-chart"
+        | "diodes-chart"
+        | "empty";
     settings?: Record<string, any>;
 };
 
@@ -51,6 +58,50 @@ function SortableTile({
                         onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
                     />
                 );
+            case "humidity-chart":
+                return (
+                    <ChartTile
+                        title="Humidity Chart"
+                        endpoint="/api/db/humidities/date-range"
+                        unit="%"
+                        color="#3b82f6"
+                        savedRange={tile.settings?.range}
+                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                    />
+                );
+            case "water-chart":
+                return (
+                    <ChartTile
+                        title="Water Level Chart"
+                        endpoint="/api/db/water-levels/date-range"
+                        unit="%"
+                        color="#06b6d4"
+                        savedRange={tile.settings?.range}
+                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                    />
+                );
+            case "light-chart":
+                return (
+                    <ChartTile
+                        title="Light Intensity Chart"
+                        endpoint="/api/db/light-intensity/date-range"
+                        unit="%"
+                        color="#facc15"
+                        savedRange={tile.settings?.range}
+                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                    />
+                );
+            case "diodes-chart":
+                return (
+                    <ChartTile
+                        title="Diodes Status Chart"
+                        endpoint="/api/db/diodes/date-range"
+                        unit=""
+                        color="#ef4444"
+                        savedRange={tile.settings?.range}
+                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                    />
+                );
             default:
                 return <span className="text-zinc-400 text-sm">Empty tile</span>;
         }
@@ -74,6 +125,10 @@ export default function TileGrid() {
             : [
                 {id: "overview", type: "overview"},
                 {id: "temperature-chart", type: "temperature-chart", settings: {range: "1d"}},
+                {id: "humidity-chart", type: "humidity-chart", settings: {range: "1d"}},
+                {id: "water-chart", type: "water-chart", settings: {range: "1d"}},
+                {id: "light-chart", type: "light-chart", settings: {range: "1d"}},
+                {id: "diodes-chart", type: "diodes-chart", settings: {range: "1d"}},
             ];
     });
 

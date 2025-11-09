@@ -124,7 +124,7 @@ export default function OverviewTile() {
                 {items.map((i) => (
                     <div
                         key={i.key}
-                        className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors rounded-lg px-3 py-3"
+                        className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-800 transition-colors rounded-lg px-3 py-3"
                     >
                         <div className="flex items-center gap-3">
                             <img src={i.icon} alt={i.label} className="w-5 h-5 opacity-80"/>

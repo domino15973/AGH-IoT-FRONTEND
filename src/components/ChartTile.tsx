@@ -60,7 +60,7 @@ export default function ChartTile({
                 const arr = res.data?.data?.data || [];
                 const formatted = arr.map((x: any) => ({
                     date: new Date(x.date).toLocaleString(),
-                    value: x.value,
+                    value: x.value ?? (x.status ? 1 : 0),
                 }));
                 setData(formatted);
             } catch {
