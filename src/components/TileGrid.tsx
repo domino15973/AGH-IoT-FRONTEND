@@ -94,7 +94,7 @@ function SortableTile({
             case "diodes-chart":
                 return (
                     <ChartTile
-                        title="Diodes Status Chart"
+                        title="Diode Status Chart"
                         endpoint="/api/db/diodes/date-range"
                         unit=""
                         color="#ef4444"
