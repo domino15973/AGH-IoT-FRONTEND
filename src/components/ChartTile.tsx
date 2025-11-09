@@ -59,7 +59,13 @@ export default function ChartTile({
                 const res = await axios.get(`${endpoint}?startDate=${startDate}&endDate=${endDate}`);
                 const arr = res.data?.data?.data || [];
                 const formatted = arr.map((x: any) => ({
-                    date: new Date(x.date).toLocaleString(),
+                    date: new Date(x.date).toLocaleString([], {
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }),
                     value: x.value ?? (x.status ? 1 : 0),
                 }));
                 setData(formatted);
