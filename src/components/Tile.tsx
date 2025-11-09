@@ -18,7 +18,7 @@ export default function Tile({id, onRemove, listeners, attributes, children}: Ti
 
     return (
         <div
-            className="relative bg-white dark:bg-zinc-900 border border-lime-500 rounded-xl shadow-sm p-4 flex items-center justify-center aspect-square select-none">
+            className="relative bg-white dark:bg-zinc-900 border border-lime-500 rounded-xl shadow-sm p-4 flex items-center justify-center w-[420px] h-[420px] select-none">
             <div
                 {...attributes}
                 {...listeners}
@@ -34,7 +34,9 @@ export default function Tile({id, onRemove, listeners, attributes, children}: Ti
                 <X size={18}/>
             </button>
 
-            {children || <span className="text-zinc-400 text-sm">Empty tile</span>}
+            <div className="w-full h-full overflow-hidden flex items-center justify-center">
+                {children ?? <span className="text-zinc-400 text-sm">Empty tile</span>}
+            </div>
         </div>
     );
 }

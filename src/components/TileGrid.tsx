@@ -15,32 +15,31 @@ import {
 import {CSS} from "@dnd-kit/utilities";
 import Tile from "./Tile";
 import {Plus} from "lucide-react";
+import OverviewTile from "./OverviewTile";
 
 function SortableTile({
                           id,
                           onRemove,
+                          children,
                       }: {
     id: string;
     onRemove: (id: string) => void;
+    children?: React.ReactNode;
 }) {
-    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
-        id,
-    });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
+    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id});
+    const style = {transform: CSS.Transform.toString(transform), transition};
 
     return (
         <div ref={setNodeRef} style={style}>
-            <Tile id={id} onRemove={onRemove} listeners={listeners} attributes={attributes}/>
+            <Tile id={id} onRemove={onRemove} listeners={listeners} attributes={attributes}>
+                {children}
+            </Tile>
         </div>
     );
 }
 
 export default function TileGrid() {
-    const [tiles, setTiles] = useState<string[]>(["1", "2", "3", "4"]);
+    const [tiles, setTiles] = useState<string[]>(["overview", "2", "3", "4"]);
     const sensors = useSensors(useSensor(PointerSensor));
 
     function handleRemove(id: string) {
@@ -67,13 +66,15 @@ export default function TileGrid() {
         <div className="p-6">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={tiles} strategy={rectSortingStrategy}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <div className="flex flex-wrap justify-center gap-6">
                         {tiles.map((id) => (
-                            <SortableTile key={id} id={id} onRemove={handleRemove}/>
+                            <SortableTile key={id} id={id} onRemove={handleRemove}>
+                                {id === "overview" ? <OverviewTile/> : null}
+                            </SortableTile>
                         ))}
                         <button
                             onClick={handleAddTile}
-                            className="aspect-square flex items-center justify-center rounded-xl border-2 border-dashed border-lime-400 text-lime-500 hover:bg-lime-400/10 transition"
+                            className="w-[420px] h-[420px] flex items-center justify-center rounded-xl border-2 border-dashed border-lime-400 text-lime-500 hover:bg-lime-400/10 transition"
                         >
                             <Plus size={40}/>
                         </button>
