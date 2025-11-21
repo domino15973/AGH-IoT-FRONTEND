@@ -29,7 +29,23 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-zinc-100 dark:bg-zinc-950 transition-colors">
+        <div
+            className="min-h-screen flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-950 transition-colors px-4">
+
+            {/* HEADER WITH LOGO */}
+            <div className="flex items-center gap-4 mb-8">
+                <img
+                    src="/lizard.svg"
+                    alt="Lizard Logo"
+                    className="w-20 h-20"
+                />
+                <div className="flex flex-col leading-tight">
+                    <span className="text-3xl font-bold text-lime-500 tracking-wide">SMART</span>
+                    <span className="text-3xl font-bold text-lime-500 tracking-wide">TERRARIUM</span>
+                </div>
+            </div>
+
+            {/* REGISTER PANEL */}
             <form
                 onSubmit={handleRegister}
                 className="bg-white dark:bg-zinc-900 shadow-lg rounded-2xl p-8 w-full max-w-sm space-y-4 border border-lime-400/40"
