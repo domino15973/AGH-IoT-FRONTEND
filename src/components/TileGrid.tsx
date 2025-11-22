@@ -17,6 +17,7 @@ import Tile from "./Tile";
 import {Plus} from "lucide-react";
 import OverviewTile from "./OverviewTile";
 import ChartTile from "./ChartTile";
+import TilePicker from "./TilePicker";
 
 type TileConfig = {
     id: string;
@@ -118,6 +119,8 @@ function SortableTile({
 
 export default function TileGrid() {
     const sensors = useSensors(useSensor(PointerSensor));
+    const [showPicker, setShowPicker] = useState(false);
+
     const [tiles, setTiles] = useState<TileConfig[]>(() => {
         const saved = localStorage.getItem("tiles");
         return saved
@@ -141,13 +144,20 @@ export default function TileGrid() {
     }
 
     function handleAddTile() {
+        setShowPicker(true);
+    }
+
+    function handleSelectTile(type: string) {
         const newId = Math.random().toString(36).substring(2, 9);
-        setTiles((prev) => [...prev, {id: newId, type: "empty"}]);
+        setTiles((prev) => [...prev, {id: newId, type, settings: {range: "1d"}}]);
+        setShowPicker(false);
     }
 
     function handleSettingsChange(id: string, settings: Record<string, any>) {
         setTiles((prev) =>
-            prev.map((t) => (t.id === id ? {...t, settings: {...t.settings, ...settings}} : t))
+            prev.map((t) =>
+                t.id === id ? {...t, settings: {...t.settings, ...settings}} : t
+            )
         );
     }
 
@@ -175,14 +185,16 @@ export default function TileGrid() {
               max-w-[2000px]
               mx-auto
             "
-                    >                        {tiles.map((tile) => (
-                        <SortableTile
-                            key={tile.id}
-                            tile={tile}
-                            onRemove={handleRemove}
-                            onSettingsChange={handleSettingsChange}
-                        />
-                    ))}
+                    >
+                        {tiles.map((tile) => (
+                            <SortableTile
+                                key={tile.id}
+                                tile={tile}
+                                onRemove={handleRemove}
+                                onSettingsChange={handleSettingsChange}
+                            />
+                        ))}
+
                         <button
                             onClick={handleAddTile}
                             className="w-[420px] h-[420px] flex items-center justify-center rounded-xl border-2 border-dashed border-lime-400 text-lime-500 hover:bg-lime-400/10 transition"
@@ -192,6 +204,13 @@ export default function TileGrid() {
                     </div>
                 </SortableContext>
             </DndContext>
+
+            {showPicker && (
+                <TilePicker
+                    onSelect={handleSelectTile}
+                    onClose={() => setShowPicker(false)}
+                />
+            )}
         </div>
     );
 }
