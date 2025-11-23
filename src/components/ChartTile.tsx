@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, memo} from "react";
 import {
     LineChart,
     Line,
@@ -13,6 +13,7 @@ import axios from "axios";
 type Range = "1d" | "3d" | "7d";
 
 interface ChartTileProps {
+    tileId: string;
     title: string;
     endpoint: string;
     unit: string;
@@ -21,14 +22,15 @@ interface ChartTileProps {
     onRangeChange?: (range: string) => void;
 }
 
-export default function ChartTile({
-                                      title,
-                                      endpoint,
-                                      unit = "",
-                                      color = "#84cc16",
-                                      savedRange,
-                                      onRangeChange,
-                                  }: ChartTileProps) {
+function ChartTile({
+                       tileId,
+                       title,
+                       endpoint,
+                       unit = "",
+                       color = "#84cc16",
+                       savedRange,
+                       onRangeChange,
+                   }: ChartTileProps) {
     const [range, setRange] = useState<Range>((savedRange as Range) || "1d");
     const [data, setData] = useState<{ date: string; value: number }[]>([]);
     const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ export default function ChartTile({
         if (range === "3d") start.setDate(end.getDate() - 3);
         else if (range === "7d") start.setDate(end.getDate() - 7);
         else start.setDate(end.getDate() - 1);
+
         return {
             startDate: start.toISOString().split("T")[0],
             endDate: end.toISOString().split("T")[0],
@@ -54,10 +57,16 @@ export default function ChartTile({
         const fetchData = async () => {
             setLoading(true);
             setErr(null);
+
             const {startDate, endDate} = getRangeDates(range);
+
             try {
-                const res = await axios.get(`${endpoint}?startDate=${startDate}&endDate=${endDate}`);
+                const res = await axios.get(
+                    `${endpoint}?startDate=${startDate}&endDate=${endDate}`
+                );
+
                 const arr = res.data?.data?.data || [];
+
                 const formatted = arr.map((x: any) => ({
                     date: new Date(x.date).toLocaleString([], {
                         year: "2-digit",
@@ -68,6 +77,7 @@ export default function ChartTile({
                     }),
                     value: x.value ?? (x.status ? 1 : 0),
                 }));
+
                 setData(formatted);
             } catch {
                 setErr("Failed to load chart data");
@@ -75,6 +85,7 @@ export default function ChartTile({
                 setLoading(false);
             }
         };
+
         fetchData();
     }, [endpoint, range]);
 
@@ -115,7 +126,11 @@ export default function ChartTile({
                 </div>
             ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data} margin={{top: 10, right: 10, left: -10, bottom: 10}}>
+                    <LineChart
+                        data={data}
+                        syncId={tileId}
+                        margin={{top: 10, right: 10, left: -10, bottom: 10}}
+                    >
                         <CartesianGrid strokeDasharray="3 3" stroke="#555" opacity={0.2}/>
                         <XAxis
                             dataKey="date"
@@ -142,6 +157,7 @@ export default function ChartTile({
                             strokeWidth={2}
                             dot={false}
                             activeDot={{r: 4}}
+                            isAnimationActive={false}
                         />
                     </LineChart>
                 </ResponsiveContainer>
@@ -149,3 +165,5 @@ export default function ChartTile({
         </div>
     );
 }
+
+export default memo(ChartTile);

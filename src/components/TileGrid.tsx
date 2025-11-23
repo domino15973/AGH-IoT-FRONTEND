@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import {
     DndContext,
     closestCenter,
@@ -13,6 +13,7 @@ import {
     rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
+
 import Tile from "./Tile";
 import {Plus} from "lucide-react";
 import OverviewTile from "./OverviewTile";
@@ -41,77 +42,102 @@ function SortableTile({
     onRemove: (id: string) => void;
     onSettingsChange: (id: string, settings: Record<string, any>) => void;
 }) {
-    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: tile.id});
+    const {attributes, listeners, setNodeRef, transform, transition} =
+        useSortable({id: tile.id});
+
     const style = {transform: CSS.Transform.toString(transform), transition};
 
-    const renderContent = () => {
+    const renderContent = useMemo(() => {
         switch (tile.type) {
             case "overview":
                 return <OverviewTile/>;
+
             case "temperature-chart":
                 return (
                     <ChartTile
+                        tileId={tile.id}
                         title="Temperature Chart"
                         endpoint="/api/db/temperatures/date-range"
                         unit="°C"
                         color="#84cc16"
                         savedRange={tile.settings?.range}
-                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                        onRangeChange={(r) =>
+                            onSettingsChange(tile.id, {range: r})
+                        }
                     />
                 );
+
             case "humidity-chart":
                 return (
                     <ChartTile
+                        tileId={tile.id}
                         title="Humidity Chart"
                         endpoint="/api/db/humidities/date-range"
                         unit="%"
                         color="#3b82f6"
                         savedRange={tile.settings?.range}
-                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                        onRangeChange={(r) =>
+                            onSettingsChange(tile.id, {range: r})
+                        }
                     />
                 );
+
             case "water-chart":
                 return (
                     <ChartTile
+                        tileId={tile.id}
                         title="Water Level Chart"
                         endpoint="/api/db/water-levels/date-range"
                         unit="%"
                         color="#06b6d4"
                         savedRange={tile.settings?.range}
-                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                        onRangeChange={(r) =>
+                            onSettingsChange(tile.id, {range: r})
+                        }
                     />
                 );
+
             case "light-chart":
                 return (
                     <ChartTile
+                        tileId={tile.id}
                         title="Light Intensity Chart"
                         endpoint="/api/db/light-intensity/date-range"
                         unit="%"
                         color="#facc15"
                         savedRange={tile.settings?.range}
-                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                        onRangeChange={(r) =>
+                            onSettingsChange(tile.id, {range: r})
+                        }
                     />
                 );
+
             case "diodes-chart":
                 return (
                     <ChartTile
+                        tileId={tile.id}
                         title="Diode Status Chart"
                         endpoint="/api/db/diodes/date-range"
                         unit=""
                         color="#ef4444"
                         savedRange={tile.settings?.range}
-                        onRangeChange={(r) => onSettingsChange(tile.id, {range: r})}
+                        onRangeChange={(r) =>
+                            onSettingsChange(tile.id, {range: r})
+                        }
                     />
                 );
+
             default:
-                return <span className="text-zinc-400 text-sm">Empty tile</span>;
+                return (
+                    <span className="text-zinc-400 text-sm">Empty tile</span>
+                );
         }
-    };
+    }, [tile.type, tile.id, tile.settings, onSettingsChange]);
 
     return (
         <div ref={setNodeRef} style={style}>
             <Tile id={tile.id} onRemove={onRemove} listeners={listeners} attributes={attributes}>
-                {renderContent()}
+                {renderContent}
             </Tile>
         </div>
     );
@@ -156,7 +182,9 @@ export default function TileGrid() {
     function handleSettingsChange(id: string, settings: Record<string, any>) {
         setTiles((prev) =>
             prev.map((t) =>
-                t.id === id ? {...t, settings: {...t.settings, ...settings}} : t
+                t.id === id
+                    ? {...t, settings: {...t.settings, ...settings}}
+                    : t
             )
         );
     }
@@ -174,17 +202,21 @@ export default function TileGrid() {
 
     return (
         <div className="p-6">
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
                 <SortableContext items={tiles.map((t) => t.id)} strategy={rectSortingStrategy}>
                     <div
                         className="
-              grid
-              justify-center
-              gap-6
-              [grid-template-columns:repeat(auto-fit,minmax(420px,1fr))]
-              max-w-[2000px]
-              mx-auto
-            "
+                            grid
+                            justify-center
+                            gap-6
+                            [grid-template-columns:repeat(auto-fit,minmax(420px,1fr))]
+                            max-w-[2000px]
+                            mx-auto
+                        "
                     >
                         {tiles.map((tile) => (
                             <SortableTile
