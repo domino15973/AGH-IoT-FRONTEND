@@ -104,11 +104,11 @@ export default function OverviewTile() {
         },
         {
             key: "diodes",
-            label: "Status",
+            label: "Light",
             value: data.diodes
                 ? data.diodes.status
-                    ? "Problem"
-                    : "OK"
+                    ? "ON"
+                    : "OFF"
                 : "-",
             icon: data.diodes?.status ? "/diode_on.svg" : "/diode_off.svg",
         },
